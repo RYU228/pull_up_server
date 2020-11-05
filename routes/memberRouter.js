@@ -7,10 +7,11 @@ const User = require("../schemas/user");
 router.post("/join", async (req, res) => {
   try {
     obj = {
-        nickname: req.body.nickname,
-        password: req.body.password
+      userId: req.body.id,
+      nickname: req.body.nickname,
+      password: req.body.password
     };
-    user = new User(obj);
+    let user = new User(obj);
     await user.save();
     res.json({ message: "회원가입 되었습니다!"});
   } catch (err) {
@@ -22,24 +23,22 @@ router.post("/join", async (req, res) => {
 router.post("/login", async (req, res) => {
   try {
     //이메일 값으로 아이디가 존재하는지 확인
-    await User.findOne({ nickname: req.body.nickname }, async (err, user) => {
+    await User.findOne({ id: req.body.id }, async (err, user) => {
       if (err) {
         console.log(err);
       } else {
         if (user) {
           const obj = {
-            nickname: req.body.nickname,
-            password: req.body.password
+            id: req.body.id
           };
-          const user2 = await User.findOne(obj);
+          const loadedUser = await User.findOne(obj);
 
-          if (user2) {
+          if (loadedUser) {
             // 있으면 로그인 처리
-            
-            //req.session.nickname = user.nickname;
             res.json({
               message: "로그인 되었습니다!",
-              _id: user2._id
+              _id: loadedUser.id,
+              _nickname: loadedUser.nickname
             });
           }
 
@@ -51,6 +50,39 @@ router.post("/login", async (req, res) => {
   } catch (err) {
     console.log(err);
     res.json({ message: "로그인 실패" });
+  }
+});
+
+router.post("/updateNick", async (req, res) => {
+  try {
+    await User.updateOne({
+      id: req.body.id
+    }, {
+      nickname: req.body.nickname
+    });
+    
+    res.json({ message: "변경되었습니다.",
+    check: true,
+    _nickname: req.body.nickname});
+  } catch (err) {
+    console.log(err);
+    res.json({ message: "변경에 실패했습니다." });
+  }
+});
+
+router.post("/updatePwd", async (req, res) => {
+  try {
+    await User.updateOne({
+      id: req.body.id
+    }, {
+      password: req.body.password
+    });
+    
+    res.json({ message: "변경되었습니다.",
+      check: true});
+  } catch (err) {
+    console.log(err);
+    res.json({ message: "변경에 실패했습니다." });
   }
 });
 
