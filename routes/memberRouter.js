@@ -7,7 +7,7 @@ const User = require("../schemas/user");
 router.post("/join", async (req, res) => {
   try {
     obj = {
-      userId: req.body.id,
+      id: req.body.id,
       nickname: req.body.nickname,
       password: req.body.password
     };
@@ -38,12 +38,15 @@ router.post("/login", async (req, res) => {
             res.json({
               message: "로그인 되었습니다!",
               _id: loadedUser.id,
-              _nickname: loadedUser.nickname
+              _nickname: loadedUser.nickname,
+              check: true
             });
           }
 
         } else {
-          res.json({ message: "아이디나 패스워드가 일치하지 않습니다." });
+          res.json({
+            message: "아이디나 패스워드가 일치하지 않습니다.",
+            check: false });
         }
       }
     });
@@ -83,6 +86,20 @@ router.post("/updatePwd", async (req, res) => {
   } catch (err) {
     console.log(err);
     res.json({ message: "변경에 실패했습니다." });
+  }
+});
+
+router.post("/delete", async (req, res) => {
+  try {
+    await User.remove({
+      id: req.body.id
+    });
+    
+    res.json({ message: "삭제되었습니다.",
+      check: true});
+  } catch (err) {
+    console.log(err);
+    res.json({ message: "삭제하지 못했습니다." });
   }
 });
 
