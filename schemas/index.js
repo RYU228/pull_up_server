@@ -28,5 +28,5 @@ module.exports = () => {
     connect();
   });
   require("./user");
-  //require("./board");
+  require("./board");
 };
