@@ -26,7 +26,9 @@ router.post("/write", async (req, res) => {
 
 router.post("/read", async (req, res) => {
   try {
-    const board = await Board.find().sort({numId:-1});
+    const amount = req.body.amount;
+    const start = amount*(req.body.start-1);
+    const board = await Board.find().skip(start).limit(amount).sort({numId:-1});
     console.log(board);
     res.json({
       check: true,
@@ -76,6 +78,58 @@ router.post("/update", async (req, res) => {
     console.log(err);
     res.json({
       message: "게시글 수정에 실패했습니다.",
+      check: false
+    });
+  }
+});
+
+router.post("/readCount", async (req, res) => {
+  try {
+    const board = await Board.find().count();
+    res.json({
+      count: board,
+      check: true
+    });
+  } catch (err) {
+    console.log(err);
+    res.json({
+      check: false
+    });
+  }
+});
+
+router.post("/readViews", async (req, res) => {
+  try {
+    const board = await Board.find(
+      { numId: req.body.numId },
+      { _id: 0, views: 1}
+    );
+    res.json({
+      data: board,
+      check: true
+    });
+  } catch (err) {
+    console.log(err);
+    res.json({
+      check: false
+    });
+  }
+});
+
+router.post("/updateViews", async (req, res) => {
+  try {
+    await Board.update(
+      { numId: req.body.numId },
+      {
+        views: req.body.views
+      }
+    );
+    res.json({
+      check: true
+    });
+  } catch (err) {
+    console.log(err);
+    res.json({
       check: false
     });
   }

@@ -42,16 +42,17 @@ router.post("/read", async (req, res) => {
 
 router.post("/delete", async (req, res) => {
   try {
-    await Comment.remove({
-      numId: req.body.numId
+    await Plan.remove({
+      id: req.body.id,
+      content: req.body.content
     });
     res.json({
-      message: "댓글이 삭제되었습니다.",
+      message: "목표가 삭제되었습니다.",
       check: true });
   } catch (err) {
     console.log(err);
     res.json({
-      message: "댓글 삭제에 실패했습니다.",
+      message: "목표 삭제에 실패했습니다.",
       check: false
       });
   }
@@ -59,20 +60,23 @@ router.post("/delete", async (req, res) => {
 
 router.post("/update", async (req, res) => {
   try {
-    await Comment.update(
-      { numId: req.body.numId },
-      {
-        content: req.body.content
-      }
-    );
+    for(let i=0; i<req.body.content.length; i++) {
+      await Plan.update(
+        { id: req.body.id, content: req.body.content[i] },
+        {
+          curCount: req.body.curCount[i], count: req.body.count[i]
+        }
+      );
+    }
+    
     res.json({
-      message: "댓글이 수정 되었습니다.",
+      message: "목표가 수정 되었습니다.",
       check: true
     });
   } catch (err) {
     console.log(err);
     res.json({
-      message: "댓글 수정에 실패했습니다.",
+      message: "목표 수정에 실패했습니다.",
       check: false
     });
   }

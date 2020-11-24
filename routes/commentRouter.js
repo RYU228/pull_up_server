@@ -25,7 +25,10 @@ router.post("/create", async (req, res) => {
 
 router.post("/read", async (req, res) => {
   try {
-    const comment = await Comment.find();
+    const comment = await Comment.find({
+      numId: req.body.numId
+    });
+    
     res.json({
       check: true,
       list: comment,

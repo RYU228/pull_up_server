@@ -24,6 +24,10 @@ const boardSchema = new Schema({
   imgPath: {
     type: String
   },
+  views: {
+    type: Number,
+    default: Number(0)
+  },
   time: {
     type: Date,
     default: Date.now
